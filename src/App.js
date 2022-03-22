@@ -7,11 +7,11 @@ function App() {
       <div className="containers">
         <div className="left-container">
           <h2>Add a new task</h2>
-          <input type="text" className="input" placeholder="Enter you todo"/>
+          <input type="text" className="input" placeholder="Enter your todo..."/>
           <button className="add-task-button">Add Task</button>
         </div>
         <div className="right-container">
-          <span className="">You have no tasks yet !</span>
+          <span className="no-task-text">You have no tasks today 😀</span>
         </div>
       </div>
     </div>
