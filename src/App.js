@@ -5,6 +5,8 @@ import { v4 as uuid } from "uuid";
 function App() {
   const [todoItem, setTodoItem] = useState("");
   const [todoItems, setTodoItems] = useState([]);
+  const [editingNow, setEditingNow] = useState(false);
+  const [todoItemToEdit, setTodoItemToEdit] = useState(null);
 
   const onChangeHandler = (event) => {
     setTodoItem(event.target.value);
@@ -12,6 +14,7 @@ function App() {
 
   const addTodoItem = () => {
     let todo_id = uuid();
+    if (todoItem.length == 0) return;
     setTodoItems([
       ...todoItems,
       {
@@ -21,6 +24,48 @@ function App() {
         done: false,
       },
     ]);
+    setTodoItem("");
+  };
+
+  const markAsDone = (todoItemId) => {
+    let newTodoItems = todoItems.map((todoItem) =>
+      todoItem.id === todoItemId
+        ? { ...todoItem, done: !todoItem.done }
+        : todoItem
+    );
+    setTodoItems(newTodoItems);
+  };
+
+  const deleteTodoItem = (todoItemId) => {
+    let newTodoItems = todoItems.filter(
+      (todoItem) => todoItem.id !== todoItemId
+    );
+    setTodoItems(newTodoItems);
+  };
+
+  const selectTodoItemToEdit = (todoItemId) => {
+    let todoItemToEdit = todoItems.find(
+      (todoItem) => todoItem.id === todoItemId
+    );
+    setTodoItem(todoItemToEdit.title);
+    setTodoItemToEdit(todoItemToEdit);
+    setEditingNow(true);
+  };
+
+  const unSelectTodoItemToEdit = () => {
+    setTodoItem("");
+    setEditingNow(false);
+    setTodoItemToEdit(null);
+  };
+
+  const updateTodoItem = () => {
+    let newTodoItems = todoItems.map((item) =>
+      item.id === todoItemToEdit.id ? { ...item, title: todoItem } : item
+    );
+    setTodoItems(newTodoItems);
+    setTodoItem("");
+    setEditingNow(false);
+    setTodoItemToEdit(null);
   };
 
   return (
@@ -30,7 +75,7 @@ function App() {
       </h1>
       <div className="containers">
         <div className="left-container">
-          <h2>Add a new task</h2>
+          {!editingNow ? <h2>Add a new task</h2> : <h2>Update task</h2>}
           <input
             onChange={onChangeHandler}
             name="todoItem"
@@ -39,39 +84,72 @@ function App() {
             value={todoItem}
             placeholder="Enter your todo..."
           />
-          <button onClick={addTodoItem} className="add-task-button">
-            Add Task
-          </button>
+          {!editingNow ? (
+            <button onClick={addTodoItem} className="add-task-button">
+              Add Task
+            </button>
+          ) : (
+            <button onClick={updateTodoItem} className="update-task-button">
+              Update Task
+            </button>
+          )}
         </div>
         <div className="right-container">
-          <span className="no-task-text">You have no tasks today 😀</span>
-          <table>
-            <thead>
-              <tr>
-                <th>Done</th>
-                <th>Title</th>
-                <th>Created On</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                todoItems.map((todoItem) =>(
+          {todoItems.length === 0 && (
+            <span className="no-task-text">You have no tasks today 😀</span>
+          )}
+          {todoItems.length > 0 && (
+            <div className="table-container">
+              <table>
+                <thead>
                   <tr>
-                    <td>
-                      <input type="checkbox" name="checkbox" value={todoItem.done} />
-                    </td>
-                    <td>{todoItem.title}</td>
-                    <td>{todoItem.date}</td>
-                    <td>
-                      <button className="edit-button">Edit</button>
-                      <button className="delete-button">Delete</button>
-                    </td>
+                    <th>Done</th>
+                    <th>Title</th>
+                    <th>Created On</th>
+                    <th>Actions</th>
                   </tr>
-                ))
-              }
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {todoItems.map((todoItem) => (
+                    <tr className={todoItem.done ? "checked" : ""}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={todoItem.checked}
+                          onChange={() => markAsDone(todoItem.id)}
+                        />
+                      </td>
+                      <td>{todoItem.title}</td>
+                      <td>{todoItem.date}</td>
+                      <td>
+                        {editingNow && todoItem.id === todoItemToEdit.id ? (
+                          <button
+                            onClick={unSelectTodoItemToEdit}
+                            className="cancel-button"
+                          >
+                            Cancel
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => selectTodoItemToEdit(todoItem.id)}
+                            className="edit-button"
+                          >
+                            Edit
+                          </button>
+                        )}
+                        <button
+                          onClick={() => deleteTodoItem(todoItem.id)}
+                          className="delete-button"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
