@@ -8,14 +8,16 @@ function App() {
   const [todoItems, setTodoItems] = useState([]);
   const [editingNow, setEditingNow] = useState(false);
   const [todoItemToEdit, setTodoItemToEdit] = useState(null);
+  const [todoDuration, setTodoDuration] = useState('');
 
   const onChangeHandler = (event) => {
-    setTodoItem(event.target.value);
+    if(event.target.name === "todoItem" ) setTodoItem(event.target.value);
+    if(event.target.name === "todoDuration" ) setTodoDuration(event.target.value);
   };
 
   const addTodoItem = () => {
     let todo_id = uuid();
-    if (todoItem.length == 0) return;
+    if (todoItem.length === 0 && todoDuration.length === 0) return;
     setTodoItems([
       ...todoItems,
       {
@@ -23,9 +25,11 @@ function App() {
         title: todoItem,
         date: new Date().toUTCString(),
         done: false,
+        duration:todoDuration
       },
     ]);
     setTodoItem("");
+    setTodoDuration("");
   };
 
   const markAsDone = (todoItemId) => {
@@ -84,6 +88,14 @@ function App() {
             className="input"
             value={todoItem}
             placeholder="Enter your todo..."
+          />
+          <input
+            onChange={onChangeHandler}
+            name="todoDuration"
+            type="text"
+            className="input"
+            value={todoDuration}
+            placeholder="Time to complete todo"
           />
           {!editingNow ? (
             <button onClick={addTodoItem} className="add-task-button">
