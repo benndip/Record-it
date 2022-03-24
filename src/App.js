@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { v4 as uuid } from "uuid";
+import Table from "./components/Table/Table";
 
 function App() {
   const [todoItem, setTodoItem] = useState("");
@@ -111,58 +112,15 @@ function App() {
             <span className="no-task-text">You have no tasks today 😀</span>
           )}
           {todoItems.length > 0 && (
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Done</th>
-                    <th>Title</th>
-                    <th>Created On</th>
-                    <th>Actions</th>
-                    <th>Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {todoItems.map((todoItem) => (
-                    <tr className={todoItem.done ? "checked" : ""}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={todoItem.checked}
-                          onChange={() => markAsDone(todoItem.id)}
-                        />
-                      </td>
-                      <td>{todoItem.title}</td>
-                      <td>{todoItem.date}</td>
-                      <td>
-                        {editingNow && todoItem.id === todoItemToEdit.id ? (
-                          <button
-                            onClick={unSelectTodoItemToEdit}
-                            className="cancel-button"
-                          >
-                            Cancel
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => selectTodoItemToEdit(todoItem.id)}
-                            className="edit-button"
-                          >
-                            Edit
-                          </button>
-                        )}
-                        <button
-                          onClick={() => deleteTodoItem(todoItem.id)}
-                          className="delete-button"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                      <td>{todoItem.duration}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table 
+              todoItems={todoItems} 
+              markAsDone={markAsDone}
+              editingNow={editingNow}
+              todoItemToEdit={todoItemToEdit}
+              onCancelEditing={unSelectTodoItemToEdit}
+              selectTodoItemToEdit={selectTodoItemToEdit}
+              deleteTodoItem={deleteTodoItem}
+            />
           )}
         </div>
       </div>
